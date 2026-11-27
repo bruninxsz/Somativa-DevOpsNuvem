@@ -1,0 +1,66 @@
+name: CI - Build e Testes
+
+# Executa automaticamente a cada push ou pull request nas branches principais
+on:
+  push:
+    branches: [ "main", "develop", "feature/**" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+  workflow_dispatch:
+
+jobs:
+  build-e-testes:
+    name: Build e testes - ${{ matrix.projeto }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        projeto: [ exercicio01, exercicio02 ]
+
+    defaults:
+      run:
+        working-directory: ${{ matrix.projeto }}
+
+    steps:
+      # 1. Download do codigo-fonte do repositorio
+      - name: Checkout do codigo
+        uses: actions/checkout@v4
+
+      # 2. Configuracao do ambiente Java (com cache das dependencias Maven)
+      - name: Configurar Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+          cache-dependency-path: ${{ matrix.projeto }}/pom.xml
+
+      - name: Permissao de execucao do Maven Wrapper
+        run: chmod +x mvnw
+
+      # 3. Instalacao das dependencias via Maven
+      - name: Baixar dependencias
+        run: ./mvnw -B dependency:go-offline
+
+      # 4. Compilacao da aplicacao Spring Boot
+      - name: Compilar
+        run: ./mvnw -B compile
+
+      # 5. Execucao dos testes automatizados (JUnit 5 + MockMvc) e geracao do .jar
+      - name: Testes e empacotamento
+        run: ./mvnw -B package
+
+      # 6. Publicacao dos resultados no GitHub Actions
+      - name: Publicar relatorio dos testes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-testes-${{ matrix.projeto }}
+          path: ${{ matrix.projeto }}/target/surefire-reports/
+
+      - name: Publicar arquivo .jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: jar-${{ matrix.projeto }}
+          path: ${{ matrix.projeto }}/target/*.jar
