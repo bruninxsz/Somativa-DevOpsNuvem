@@ -6,8 +6,8 @@ Duas APIs REST em **Java 21 + Spring Boot 4** desenvolvidas para a CloudTech Sol
 
 | Projeto | Descrição | URL pública (Railway) |
 |---|---|---|
-| [exercicio01](exercicio01/) | Monitoramento de máquinas industriais | `https://<preencher>.up.railway.app` |
-| [exercicio02](exercicio02/) | Gerenciamento do acervo da biblioteca | `https://<preencher>.up.railway.app` |
+| [exercicio01](exercicio01/) | Monitoramento de máquinas industriais | `https://bruno-nuvem01.up.railway.app` |
+| [exercicio02](exercicio02/) | Gerenciamento do acervo da biblioteca | `https://bruno-nuvem02.up.railway.app` |
 
 ## Tecnologias
 
